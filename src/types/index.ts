@@ -55,6 +55,30 @@ export interface AnnouncementSummary {
   createdAt: string;
 }
 
+export interface AdminQuickStat {
+  label: string;
+  value: number;
+  helper: string;
+}
+
+export interface AdminRosterItem {
+  id: string;
+  name: string;
+  accessId: string;
+  subtitle: string;
+  meta: string;
+  tags: string[];
+}
+
+export interface AdminAnnouncementItem {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  priority: number;
+  status: string;
+}
+
 // ─────────────────── Exam Proctoring ───────────────────
 
 export interface ProctoringConfig {

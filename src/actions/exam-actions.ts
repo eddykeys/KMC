@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import type { ViolationType } from "@prisma/client";
+import { Prisma, type ViolationType } from "@prisma/client";
 
 export async function logViolation(data: {
   type: ViolationType;
@@ -17,7 +17,7 @@ export async function logViolation(data: {
         type: data.type,
         description: data.description,
         screenshotUrl: data.screenshotUrl,
-        metadata: data.metadata,
+        metadata: data.metadata as Prisma.InputJsonValue | undefined,
         studentId: data.studentId,
         submissionId: data.submissionId,
       },
