@@ -8,7 +8,11 @@ export default async function HomePage() {
     redirect("/login");
   }
 
-  const user = session.user as { role: string };
+  const user = session.user as { role: string; mustChangePassword?: boolean };
+
+  if (user.mustChangePassword) {
+    redirect("/change-password");
+  }
 
   // Redirect based on role
   switch (user.role) {

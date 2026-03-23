@@ -42,10 +42,18 @@ export function AnnouncementList({ items }: AnnouncementListProps) {
             </span>
           </div>
           <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+          {item.className ? (
+            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-stone-500">
+              Target: {item.className}
+            </p>
+          ) : (
+            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-stone-500">
+              Target: School-wide
+            </p>
+          )}
           <p className="mt-2 text-sm leading-6 text-stone-400">{truncate(item.content, 180)}</p>
         </article>
       ))}
     </div>
   );
 }
-

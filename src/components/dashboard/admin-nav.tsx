@@ -9,7 +9,10 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/teachers", label: "Teachers", description: "Faculty directory" },
   { href: "/admin/students", label: "Students", description: "Enrollment watch" },
   { href: "/admin/classes", label: "Classes", description: "Structure and owners" },
+  { href: "/admin/subjects", label: "Subjects", description: "Academic map" },
   { href: "/admin/announcements", label: "Announcements", description: "Message board" },
+  { href: "/admin/fees", label: "Fees", description: "Billing and collections" },
+  { href: "/admin/report-cards", label: "Report Cards", description: "Print and publish" },
 ];
 
 export function AdminNav() {
@@ -44,4 +47,3 @@ export function AdminNav() {
     </nav>
   );
 }
-

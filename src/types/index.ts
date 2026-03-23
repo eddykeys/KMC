@@ -18,6 +18,7 @@ export interface SessionUser {
   teacherId?: string;
   studentId?: string;
   classId?: string;
+  mustChangePassword?: boolean;
 }
 
 // ─────────────────── Dashboard Stats ───────────────────
@@ -77,6 +78,7 @@ export interface AdminAnnouncementItem {
   createdAt: string;
   priority: number;
   status: string;
+  className?: string | null;
 }
 
 // ─────────────────── Exam Proctoring ───────────────────
