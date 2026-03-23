@@ -13,6 +13,7 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/announcements", label: "Announcements", description: "Message board" },
   { href: "/admin/fees", label: "Fees", description: "Billing and collections" },
   { href: "/admin/report-cards", label: "Report Cards", description: "Print and publish" },
+  { href: "/admin/analytics", label: "Analytics", description: "School signals" },
 ];
 
 export function AdminNav() {

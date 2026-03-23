@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
+import {
+  deleteReportCardFormAction,
+  toggleReportCardPublishFormAction,
+} from "@/app/(dashboard)/admin/report-cards/actions";
 import { ReportCardGenerateForm } from "@/components/dashboard/report-card-generate-form";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -142,12 +146,32 @@ export default async function AdminReportCardsPage() {
                   <span>Generated {formatDate(card.generatedAt)}</span>
                 </div>
                 <div className="mt-4">
-                  <Link
-                    href={`/admin/report-cards/${card.id}`}
-                    className="inline-flex items-center rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
-                  >
-                    Open report card
-                  </Link>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href={`/admin/report-cards/${card.id}`}
+                      className="inline-flex items-center rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
+                    >
+                      Open report card
+                    </Link>
+                    <form action={toggleReportCardPublishFormAction}>
+                      <input type="hidden" name="reportCardId" value={card.id} />
+                      <button
+                        type="submit"
+                        className="inline-flex items-center rounded-2xl border border-sky-300/20 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20"
+                      >
+                        {card.isPublished ? "Unpublish" : "Publish"}
+                      </button>
+                    </form>
+                    <form action={deleteReportCardFormAction}>
+                      <input type="hidden" name="reportCardId" value={card.id} />
+                      <button
+                        type="submit"
+                        className="inline-flex items-center rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </article>
             ))}

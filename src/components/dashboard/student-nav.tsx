@@ -8,6 +8,7 @@ const STUDENT_NAV_ITEMS = [
   { href: "/student", label: "Overview", description: "Learning pulse" },
   { href: "/student/exams", label: "Exams", description: "Take assessments" },
   { href: "/student/results", label: "Results", description: "Track performance" },
+  { href: "/student/materials", label: "Materials", description: "Browse lessons" },
   { href: "/student/fees", label: "Fees", description: "View balances" },
   { href: "/student/report-cards", label: "Report Cards", description: "Print and export" },
 ];

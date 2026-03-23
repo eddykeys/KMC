@@ -159,3 +159,26 @@ export async function recordPaymentFormAction(
     message: "Payment recorded successfully.",
   };
 }
+
+export async function deleteFeeFormAction(formData: FormData) {
+  const session = await auth();
+  const user = session?.user as SessionUser | undefined;
+
+  if (!user || user.role !== "ADMIN") {
+    throw new Error("Unauthorized request.");
+  }
+
+  const feeId = formData.get("feeId");
+
+  if (typeof feeId !== "string" || feeId.length === 0) {
+    throw new Error("Missing fee id.");
+  }
+
+  await prisma.fee.delete({
+    where: { id: feeId },
+  });
+
+  revalidatePath("/admin/fees");
+  revalidatePath("/admin/analytics");
+  revalidatePath("/student/fees");
+}

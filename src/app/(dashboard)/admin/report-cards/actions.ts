@@ -171,3 +171,72 @@ export async function generateReportCardFormAction(
     message: "Report card generated successfully.",
   };
 }
+
+export async function toggleReportCardPublishFormAction(formData: FormData) {
+  const session = await auth();
+  const user = session?.user as SessionUser | undefined;
+
+  if (!user || user.role !== "ADMIN") {
+    throw new Error("Unauthorized request.");
+  }
+
+  const reportCardId = formData.get("reportCardId");
+
+  if (typeof reportCardId !== "string" || reportCardId.length === 0) {
+    throw new Error("Missing report card id.");
+  }
+
+  const reportCard = await prisma.reportCard.findFirst({
+    where: {
+      id: reportCardId,
+      student: {
+        user: {
+          schoolId: user.schoolId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      isPublished: true,
+    },
+  });
+
+  if (!reportCard) {
+    throw new Error("Report card not found.");
+  }
+
+  await prisma.reportCard.update({
+    where: { id: reportCardId },
+    data: {
+      isPublished: !reportCard.isPublished,
+    },
+  });
+
+  revalidatePath("/admin/report-cards");
+  revalidatePath(`/admin/report-cards/${reportCardId}`);
+  revalidatePath("/admin/analytics");
+  revalidatePath("/student/report-cards");
+}
+
+export async function deleteReportCardFormAction(formData: FormData) {
+  const session = await auth();
+  const user = session?.user as SessionUser | undefined;
+
+  if (!user || user.role !== "ADMIN") {
+    throw new Error("Unauthorized request.");
+  }
+
+  const reportCardId = formData.get("reportCardId");
+
+  if (typeof reportCardId !== "string" || reportCardId.length === 0) {
+    throw new Error("Missing report card id.");
+  }
+
+  await prisma.reportCard.delete({
+    where: { id: reportCardId },
+  });
+
+  revalidatePath("/admin/report-cards");
+  revalidatePath("/admin/analytics");
+  revalidatePath("/student/report-cards");
+}

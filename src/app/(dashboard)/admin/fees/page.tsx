@@ -1,6 +1,7 @@
 import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { AdminFeeForm } from "@/components/dashboard/admin-fee-form";
 import { PaymentRecordForm } from "@/components/dashboard/payment-record-form";
+import { deleteFeeFormAction } from "@/app/(dashboard)/admin/fees/actions";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { formatDate, formatNaira } from "@/lib/utils";
@@ -150,6 +151,17 @@ export default async function AdminFeesPage() {
                   {fee.description ? (
                     <p className="mt-4 text-sm text-stone-300">{fee.description}</p>
                   ) : null}
+                  <div className="mt-4">
+                    <form action={deleteFeeFormAction}>
+                      <input type="hidden" name="feeId" value={fee.id} />
+                      <button
+                        type="submit"
+                        className="inline-flex items-center rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                      >
+                        Delete fee
+                      </button>
+                    </form>
+                  </div>
                 </article>
               );
             })}
