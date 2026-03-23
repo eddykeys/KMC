@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { publishExamResultsFormAction } from "@/app/(dashboard)/teacher/exams/[examId]/submissions/actions";
 import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -66,6 +67,15 @@ export default async function TeacherExamSubmissionsPage({
           <span>{exam.totalMarks} marks</span>
           <span>{exam.type}</span>
         </div>
+        <form action={publishExamResultsFormAction} className="mb-6">
+          <input type="hidden" name="examId" value={exam.id} />
+          <button
+            type="submit"
+            className="inline-flex items-center rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-300/20"
+          >
+            Publish graded scores to results
+          </button>
+        </form>
 
         {exam.submissions.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">

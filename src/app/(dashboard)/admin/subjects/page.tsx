@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Trash2, UserPlus, X } from "lucide-react";
 import {
   assignTeacherToSubjectFormAction,
@@ -168,16 +169,24 @@ export default async function AdminSubjectsPage() {
                       </button>
                     </form>
 
-                    <form action={deleteSubjectFormAction}>
-                      <input type="hidden" name="subjectId" value={subject.id} />
-                      <button
-                        type="submit"
-                        className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                    <div className="flex flex-wrap gap-3">
+                      <Link
+                        href={`/admin/subjects/${subject.id}`}
+                        className="inline-flex items-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
                       >
-                        <Trash2 className="h-4 w-4" />
-                        Remove subject
-                      </button>
-                    </form>
+                        Edit subject
+                      </Link>
+                      <form action={deleteSubjectFormAction}>
+                        <input type="hidden" name="subjectId" value={subject.id} />
+                        <button
+                          type="submit"
+                          className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Remove subject
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </article>

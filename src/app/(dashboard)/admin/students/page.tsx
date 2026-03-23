@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { deleteStudentFormAction } from "@/app/(dashboard)/admin/students/actions";
 import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
@@ -75,16 +76,24 @@ export default async function AdminStudentsPage() {
                     </span>
                   </div>
 
-                  <form action={deleteStudentFormAction}>
-                    <input type="hidden" name="studentId" value={student.id} />
-                    <button
-                      type="submit"
-                      className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                  <div className="flex flex-wrap gap-3 xl:justify-end">
+                    <Link
+                      href={`/admin/students/${student.id}`}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
                     >
-                      <Trash2 className="h-4 w-4" />
-                      Remove student
-                    </button>
-                  </form>
+                      Edit student
+                    </Link>
+                    <form action={deleteStudentFormAction}>
+                      <input type="hidden" name="studentId" value={student.id} />
+                      <button
+                        type="submit"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Remove student
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </article>
             ))}

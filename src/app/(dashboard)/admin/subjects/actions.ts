@@ -109,6 +109,73 @@ export async function createSubjectFormAction(
   }
 }
 
+export async function updateSubjectFormAction(
+  subjectId: string,
+  _prevState: SubjectFormState,
+  formData: FormData
+): Promise<SubjectFormState> {
+  const session = await auth();
+  const user = session?.user as SessionUser | undefined;
+
+  if (!user || user.role !== "ADMIN") {
+    return {
+      success: false,
+      message: "Unauthorized request.",
+    };
+  }
+
+  const parsed = createSubjectSchema.safeParse({
+    name: formData.get("name"),
+    code: formData.get("code") || undefined,
+    classId: formData.get("classId"),
+    schoolId: user.schoolId,
+  });
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Please correct the highlighted fields and try again.",
+      errors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    await prisma.subject.update({
+      where: { id: subjectId },
+      data: {
+        name: parsed.data.name,
+        code: parsed.data.code || null,
+        classId: parsed.data.classId,
+      },
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/subjects");
+    revalidatePath(`/admin/subjects/${subjectId}`);
+
+    return {
+      success: true,
+      message: "Subject updated successfully.",
+    };
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return {
+        success: false,
+        message: "A subject with this name already exists for the selected class.",
+      };
+    }
+
+    console.error("Failed to update subject:", error);
+    return {
+      success: false,
+      message: "Failed to update subject.",
+    };
+  }
+}
+
 export async function deleteSubjectFormAction(formData: FormData) {
   const session = await auth();
   const user = session?.user as SessionUser | undefined;

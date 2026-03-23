@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { deleteClassFormAction } from "@/app/(dashboard)/admin/classes/actions";
 import { ClassCreateForm } from "@/components/dashboard/class-create-form";
@@ -115,16 +116,24 @@ export default async function AdminClassesPage() {
                     </span>
                   </div>
 
-                  <form action={deleteClassFormAction}>
-                    <input type="hidden" name="classId" value={schoolClass.id} />
-                    <button
-                      type="submit"
-                      className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                  <div className="flex flex-wrap gap-3 xl:justify-end">
+                    <Link
+                      href={`/admin/classes/${schoolClass.id}`}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
                     >
-                      <Trash2 className="h-4 w-4" />
-                      Remove class
-                    </button>
-                  </form>
+                      Edit class
+                    </Link>
+                    <form action={deleteClassFormAction}>
+                      <input type="hidden" name="classId" value={schoolClass.id} />
+                      <button
+                        type="submit"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-400/20"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Remove class
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </article>
             ))}

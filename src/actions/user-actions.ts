@@ -91,6 +91,64 @@ export async function deleteStudent(studentId: string) {
   }
 }
 
+export async function updateStudent(
+  studentId: string,
+  data: CreateStudentInput
+) {
+  try {
+    const school = await prisma.school.findUnique({
+      where: { code: data.schoolCode },
+      select: { id: true },
+    });
+    if (!school) return { success: false, error: "School not found" };
+
+    const student = await prisma.student.findFirst({
+      where: {
+        id: studentId,
+        user: {
+          schoolId: school.id,
+        },
+      },
+      select: {
+        id: true,
+        userId: true,
+      },
+    });
+
+    if (!student) {
+      return { success: false, error: "Student not found" };
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: student.userId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        middleName: data.middleName,
+        gender: data.gender,
+        studentProfile: {
+          update: {
+            dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+            address: data.address,
+            parentName: data.parentName,
+            parentEmail: data.parentEmail || null,
+            parentPhone: data.parentPhone,
+            classId: data.classId,
+          },
+        },
+      },
+      include: {
+        studentProfile: true,
+      },
+    });
+
+    return { success: true, user: updatedUser };
+  } catch (error) {
+    console.error("Failed to update student:", error);
+    return { success: false, error: "Failed to update student" };
+  }
+}
+
 export async function getStudents(schoolId: string, params?: {
   search?: string;
   classId?: string;
@@ -189,6 +247,64 @@ export async function createTeacher(data: CreateTeacherInput) {
   } catch (error) {
     console.error("Failed to create teacher:", error);
     return { success: false, error: "Failed to create teacher" };
+  }
+}
+
+export async function updateTeacher(
+  teacherId: string,
+  data: CreateTeacherInput
+) {
+  try {
+    const school = await prisma.school.findUnique({
+      where: { code: data.schoolCode },
+      select: { id: true },
+    });
+    if (!school) return { success: false, error: "School not found" };
+
+    const teacher = await prisma.teacher.findFirst({
+      where: {
+        id: teacherId,
+        user: {
+          schoolId: school.id,
+        },
+      },
+      select: {
+        id: true,
+        userId: true,
+      },
+    });
+
+    if (!teacher) {
+      return { success: false, error: "Teacher not found" };
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: teacher.userId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        middleName: data.middleName,
+        email: data.email || null,
+        gender: data.gender,
+        phone: data.phone,
+        teacherProfile: {
+          update: {
+            qualification: data.qualification,
+            specialization: data.specialization,
+            dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+            address: data.address,
+          },
+        },
+      },
+      include: {
+        teacherProfile: true,
+      },
+    });
+
+    return { success: true, user: updatedUser };
+  } catch (error) {
+    console.error("Failed to update teacher:", error);
+    return { success: false, error: "Failed to update teacher" };
   }
 }
 
