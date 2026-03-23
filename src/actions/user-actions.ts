@@ -239,3 +239,20 @@ export async function getTeachers(schoolId: string, params?: {
     totalPages: Math.ceil(total / pageSize),
   };
 }
+
+export async function deleteTeacher(teacherId: string) {
+  try {
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: teacherId },
+      select: { userId: true },
+    });
+
+    if (!teacher) return { success: false, error: "Teacher not found" };
+
+    await prisma.user.delete({ where: { id: teacher.userId } });
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete teacher:", error);
+    return { success: false, error: "Failed to delete teacher" };
+  }
+}
