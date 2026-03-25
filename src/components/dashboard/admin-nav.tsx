@@ -10,6 +10,7 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/students", label: "Students", description: "Enrollment watch" },
   { href: "/admin/classes", label: "Classes", description: "Structure and owners" },
   { href: "/admin/subjects", label: "Subjects", description: "Academic map" },
+  { href: "/admin/schedules", label: "Schedules", description: "Timetable control" },
   { href: "/admin/announcements", label: "Announcements", description: "Message board" },
   { href: "/admin/fees", label: "Fees", description: "Billing and collections" },
   { href: "/admin/report-cards", label: "Report Cards", description: "Print and publish" },

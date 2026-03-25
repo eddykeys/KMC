@@ -1,8 +1,11 @@
 import { cache } from "react";
 import prisma from "@/lib/prisma";
+import { getCurrentSchoolDay } from "@/lib/utils";
 
 export const getAdminAnalyticsData = cache(async (schoolId: string) => {
-  const [students, fees, payments, results, reportCards, attendanceRecords] = await Promise.all([
+  const currentSchoolDay = getCurrentSchoolDay();
+  const [students, fees, payments, results, reportCards, attendanceRecords, classes, schedules] =
+    await Promise.all([
     prisma.student.findMany({
       where: {
         user: {
@@ -136,7 +139,39 @@ export const getAdminAnalyticsData = cache(async (schoolId: string) => {
         },
       },
     }),
-  ]);
+    prisma.class.findMany({
+      where: {
+        schoolId,
+      },
+      select: {
+        id: true,
+        name: true,
+        level: true,
+      },
+    }),
+    prisma.schedule.findMany({
+      where: {
+        class: {
+          schoolId,
+        },
+      },
+      select: {
+        id: true,
+        day: true,
+        classId: true,
+        class: {
+          select: {
+            name: true,
+          },
+        },
+        subject: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    }),
+    ]);
 
   const totalCollected = payments.reduce((sum, payment) => sum + payment.amount, 0);
 
@@ -215,6 +250,36 @@ export const getAdminAnalyticsData = cache(async (schoolId: string) => {
   }
 
   const attendanceByClass = Array.from(attendanceSummaryMap.values()).slice(0, 6);
+  const attendancePressure = attendanceByClass
+    .map((item) => {
+      const total = item.present + item.absent + item.late + item.excused;
+      const awayCount = item.absent + item.late + item.excused;
+
+      return {
+        ...item,
+        total,
+        awayRate: total > 0 ? (awayCount / total) * 100 : 0,
+      };
+    })
+    .sort((a, b) => b.awayRate - a.awayRate)
+    .slice(0, 5);
+
+  const classesWithSchedules = new Set(schedules.map((schedule) => schedule.classId));
+  const scheduledClasses = classes.filter((classItem) => classesWithSchedules.has(classItem.id)).length;
+  const unscheduledClasses = Math.max(classes.length - scheduledClasses, 0);
+  const todayScheduleCount = currentSchoolDay
+    ? schedules.filter((schedule) => schedule.day === currentSchoolDay).length
+    : 0;
+  const timetableHighlights = currentSchoolDay
+    ? schedules
+        .filter((schedule) => schedule.day === currentSchoolDay)
+        .slice(0, 6)
+        .map((schedule) => ({
+          id: schedule.id,
+          className: schedule.class.name,
+          subjectName: schedule.subject.name,
+        }))
+    : [];
 
   return {
     quickStats: [
@@ -239,8 +304,18 @@ export const getAdminAnalyticsData = cache(async (schoolId: string) => {
         helper: "Published report cards across recent academic reporting.",
       },
     ],
+    currentSchoolDay,
     attendanceByClass,
+    attendancePressure,
     classPerformance,
+    timetableCoverage: {
+      totalClasses: classes.length,
+      scheduledClasses,
+      unscheduledClasses,
+      totalPeriods: schedules.length,
+      todayScheduleCount,
+    },
+    timetableHighlights,
     recentPayments: payments,
     recentReportCards: reportCards,
   };

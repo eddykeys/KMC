@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  CalendarDays,
   ClipboardList,
   FileText,
   Users,
@@ -8,7 +9,7 @@ import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
 import { auth } from "@/lib/auth";
 import { getTeacherDashboardData } from "@/lib/teacher-dashboard";
-import { formatDate } from "@/lib/utils";
+import { formatDate, SCHOOL_DAY_LABELS } from "@/lib/utils";
 import type { SessionUser } from "@/types";
 
 export default async function TeacherDashboardPage() {
@@ -137,6 +138,91 @@ export default async function TeacherDashboardPage() {
                   </div>
                 </article>
               ))}
+            </div>
+          )}
+        </DashboardPanel>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+        <DashboardPanel
+          eyebrow="Timetable"
+          title="Today&apos;s teaching slots"
+          description="Your active timetable for the current school day helps you move from preparation into delivery without leaving the dashboard."
+        >
+          {!dashboard.currentSchoolDay ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              Today is outside the school timetable window.
+            </div>
+          ) : dashboard.todaySchedule.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              No timetable slots are assigned to you for {SCHOOL_DAY_LABELS[dashboard.currentSchoolDay]}.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {dashboard.todaySchedule.map((slot) => (
+                <article
+                  key={slot.id}
+                  className="rounded-3xl border border-white/10 bg-white/[0.04] p-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-white">{slot.subject.name}</p>
+                      <p className="mt-1 text-sm text-stone-400">
+                        {slot.class.name} ({slot.class.level})
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-sky-300/10 px-3 py-2 text-sm font-medium text-sky-100">
+                      {slot.startTime} - {slot.endTime}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </DashboardPanel>
+
+        <DashboardPanel
+          eyebrow="Attendance"
+          title="Latest register snapshot"
+          description="A quick attendance summary helps teachers spot the latest attendance pressure without opening the full register."
+        >
+          {!dashboard.attendanceSnapshot ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              No attendance record has been captured under this teacher account yet.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">Latest capture</p>
+                    <p className="mt-1 text-sm text-stone-400">
+                      {formatDate(dashboard.attendanceSnapshot.date)}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-emerald-300/10 px-3 py-2 text-sm font-medium text-emerald-100">
+                    {dashboard.attendanceSnapshot.classNames.join(", ")}
+                  </div>
+                </div>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                <DashboardStatCard
+                  label="Present"
+                  value={dashboard.attendanceSnapshot.present}
+                  helper="Students marked present in the latest attendance capture."
+                  icon={<Users className="h-5 w-5" />}
+                />
+                <DashboardStatCard
+                  label="Away / Late"
+                  value={
+                    dashboard.attendanceSnapshot.absent +
+                    dashboard.attendanceSnapshot.late +
+                    dashboard.attendanceSnapshot.excused
+                  }
+                  helper="Students absent, late, or excused in the latest capture."
+                  icon={<CalendarDays className="h-5 w-5" />}
+                />
+              </div>
             </div>
           )}
         </DashboardPanel>

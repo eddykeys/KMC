@@ -72,6 +72,12 @@ export default async function TeacherExamDetailPage({
             >
               Review submissions
             </Link>
+            <Link
+              href={`/teacher/exams/${exam.id}/analytics`}
+              className="inline-flex items-center rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-300/20"
+            >
+              View analytics
+            </Link>
           </div>
         </form>
       </DashboardPanel>

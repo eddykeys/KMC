@@ -1,6 +1,22 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export const SCHOOL_DAY_ORDER = [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+] as const;
+
+export const SCHOOL_DAY_LABELS: Record<(typeof SCHOOL_DAY_ORDER)[number], string> = {
+  MONDAY: "Monday",
+  TUESDAY: "Tuesday",
+  WEDNESDAY: "Wednesday",
+  THURSDAY: "Thursday",
+  FRIDAY: "Friday",
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -58,6 +74,16 @@ export function formatDate(date: Date | string): string {
     month: "short",
     year: "numeric",
   });
+}
+
+export function getCurrentSchoolDay(date = new Date()): (typeof SCHOOL_DAY_ORDER)[number] | null {
+  const weekday = date.getDay();
+
+  if (weekday < 1 || weekday > 5) {
+    return null;
+  }
+
+  return SCHOOL_DAY_ORDER[weekday - 1];
 }
 
 /**

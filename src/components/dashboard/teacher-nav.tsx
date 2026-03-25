@@ -8,6 +8,7 @@ const TEACHER_NAV_ITEMS = [
   { href: "/teacher", label: "Overview", description: "Teaching pulse" },
   { href: "/teacher/lesson-plans", label: "Lesson Plans", description: "Plan and draft" },
   { href: "/teacher/exams", label: "Exams", description: "Assess and publish" },
+  { href: "/teacher/timetable", label: "Timetable", description: "Weekly teaching load" },
   { href: "/teacher/results", label: "Results", description: "Score and review" },
   { href: "/teacher/attendance", label: "Attendance", description: "Daily class register" },
   { href: "/teacher/weekly-reports", label: "Weekly Reports", description: "Teaching summaries" },

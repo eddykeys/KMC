@@ -9,6 +9,7 @@ export const classLevelSchema = z.enum(["JSS1", "JSS2", "JSS3", "SSS1", "SSS2", 
 export const termNameSchema = z.enum(["FIRST", "SECOND", "THIRD"]);
 export const examTypeSchema = z.enum(["MIDTERM", "CUSTOM_TEST", "EXAM", "CBT"]);
 export const questionTypeSchema = z.enum(["MCQ", "WRITTEN", "TRUE_FALSE", "FILL_IN_THE_BLANK"]);
+export const dayOfWeekSchema = z.enum(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]);
 
 // ─────────────────── Auth ───────────────────
 
@@ -184,6 +185,37 @@ export const createAnnouncementSchema = z.object({
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;
 
 // ─────────────────── Attendance ───────────────────
+
+export const createScheduleSchema = z
+  .object({
+    subjectId: z.string().min(1, "Subject is required"),
+    day: dayOfWeekSchema,
+    startTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Start time must use HH:MM format"),
+    endTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "End time must use HH:MM format"),
+  })
+  .refine((value) => value.endTime > value.startTime, {
+    message: "End time must be later than start time",
+    path: ["endTime"],
+  });
+
+export type CreateScheduleInput = z.infer<typeof createScheduleSchema>;
+
+export const copyScheduleDaySchema = z
+  .object({
+    classId: z.string().min(1, "Class is required"),
+    sourceDay: dayOfWeekSchema,
+    targetDay: dayOfWeekSchema,
+  })
+  .refine((value) => value.sourceDay !== value.targetDay, {
+    message: "Choose a different target day",
+    path: ["targetDay"],
+  });
+
+export type CopyScheduleDayInput = z.infer<typeof copyScheduleDaySchema>;
 
 export const markAttendanceSchema = z.object({
   date: z.string().min(1),

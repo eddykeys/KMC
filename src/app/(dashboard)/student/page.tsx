@@ -1,9 +1,9 @@
-import { Bell, BookOpen, ClipboardCheck, Trophy } from "lucide-react";
+import { Bell, BookOpen, CalendarDays, ClipboardCheck, Trophy } from "lucide-react";
 import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
 import { auth } from "@/lib/auth";
 import { getStudentDashboardData } from "@/lib/student-dashboard";
-import { formatDate, truncate } from "@/lib/utils";
+import { formatDate, SCHOOL_DAY_LABELS, truncate } from "@/lib/utils";
 import type { SessionUser } from "@/types";
 
 const PRIORITY_LABELS: Record<number, string> = {
@@ -79,6 +79,50 @@ export default async function StudentDashboardPage() {
 
       <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <DashboardPanel
+          eyebrow="Timetable"
+          title="Today&apos;s classes"
+          description="A simple day view helps students know which subjects are up next without leaving the dashboard."
+        >
+          {!dashboard.currentSchoolDay ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              Today is outside the school timetable window.
+            </div>
+          ) : dashboard.todaySchedule.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              No classes are scheduled for {SCHOOL_DAY_LABELS[dashboard.currentSchoolDay]} yet.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {dashboard.todaySchedule.map((slot) => (
+                <article
+                  key={slot.id}
+                  className="rounded-3xl border border-white/10 bg-white/[0.04] p-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-white">{slot.subject.name}</p>
+                      <p className="mt-1 text-sm text-stone-400">
+                        {slot.subject.teachers.length > 0
+                          ? slot.subject.teachers
+                              .map(
+                                (teacher) =>
+                                  `${teacher.teacher.user.firstName} ${teacher.teacher.user.lastName}`,
+                              )
+                              .join(", ")
+                          : "Teacher assignment pending"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-emerald-300/10 px-3 py-2 text-sm font-medium text-emerald-100">
+                      {slot.startTime} - {slot.endTime}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </DashboardPanel>
+
+        <DashboardPanel
           eyebrow="Assessments"
           title="Available exams"
           description="Published exams for your class appear here with timing information so you can prepare ahead."
@@ -109,6 +153,37 @@ export default async function StudentDashboardPage() {
         </DashboardPanel>
 
         <DashboardPanel
+          eyebrow="Attendance"
+          title="Latest attendance status"
+          description="A quick attendance snapshot gives students a clearer view of their most recent school-day status."
+        >
+          {!dashboard.latestAttendance ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              No attendance has been recorded for you yet.
+            </div>
+          ) : (
+            <article className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-white">{dashboard.latestAttendance.status}</p>
+                  <p className="mt-1 text-sm text-stone-400">
+                    {dashboard.latestAttendance.class.name}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-emerald-300/10 p-3 text-emerald-100">
+                  <CalendarDays className="h-5 w-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-stone-300">
+                Latest mark captured on {formatDate(dashboard.latestAttendance.date)}.
+              </p>
+            </article>
+          )}
+        </DashboardPanel>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+        <DashboardPanel
           eyebrow="Results"
           title="Recent performance"
           description="Latest recorded results help students keep an eye on progress subject by subject."
@@ -136,9 +211,7 @@ export default async function StudentDashboardPage() {
             </div>
           )}
         </DashboardPanel>
-      </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <DashboardPanel
           eyebrow="Announcements"
           title="School and class notices"

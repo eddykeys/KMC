@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const STUDENT_NAV_ITEMS = [
   { href: "/student", label: "Overview", description: "Learning pulse" },
   { href: "/student/exams", label: "Exams", description: "Take assessments" },
+  { href: "/student/timetable", label: "Timetable", description: "Weekly class plan" },
   { href: "/student/results", label: "Results", description: "Track performance" },
   { href: "/student/materials", label: "Materials", description: "Browse lessons" },
   { href: "/student/fees", label: "Fees", description: "View balances" },

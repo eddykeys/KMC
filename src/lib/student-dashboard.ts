@@ -1,7 +1,9 @@
 import { cache } from "react";
 import prisma from "@/lib/prisma";
+import { getCurrentSchoolDay } from "@/lib/utils";
 
 export const getStudentDashboardData = cache(async (studentId: string) => {
+  const currentSchoolDay = getCurrentSchoolDay();
   const student = await prisma.student.findUnique({
     where: { id: studentId },
     include: {
@@ -27,7 +29,8 @@ export const getStudentDashboardData = cache(async (studentId: string) => {
     return null;
   }
 
-  const [publishedExams, recentResults, announcements, recentLessonPlans] = await Promise.all([
+  const [publishedExams, recentResults, announcements, recentLessonPlans, todaySchedule, latestAttendance] =
+    await Promise.all([
     prisma.exam.findMany({
       where: {
         classId: student.classId ?? undefined,
@@ -96,13 +99,67 @@ export const getStudentDashboardData = cache(async (studentId: string) => {
         createdAt: true,
       },
     }),
-  ]);
+    prisma.schedule.findMany({
+      where:
+        student.classId && currentSchoolDay
+          ? {
+              classId: student.classId,
+              day: currentSchoolDay,
+            }
+          : {
+              id: "__no_schedule__",
+            },
+      orderBy: [{ startTime: "asc" }],
+      select: {
+        id: true,
+        startTime: true,
+        endTime: true,
+        subject: {
+          select: {
+            name: true,
+            teachers: {
+              select: {
+                teacher: {
+                  select: {
+                    user: {
+                      select: {
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.attendance.findFirst({
+      where: {
+        studentId,
+      },
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      select: {
+        date: true,
+        status: true,
+        class: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    }),
+    ]);
 
   return {
     student,
+    currentSchoolDay,
     publishedExams,
     recentResults,
     announcements,
     recentLessonPlans,
+    todaySchedule,
+    latestAttendance,
   };
 });

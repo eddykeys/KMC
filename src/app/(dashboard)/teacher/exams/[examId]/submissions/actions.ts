@@ -32,10 +32,12 @@ export async function publishExamResultsFormAction(formData: FormData) {
             not: null,
           },
         },
-        select: {
-          id: true,
-          studentId: true,
-          totalScore: true,
+        include: {
+          answers: {
+            select: {
+              marksObtained: true,
+            },
+          },
         },
       },
     },
@@ -46,6 +48,11 @@ export async function publishExamResultsFormAction(formData: FormData) {
   }
 
   for (const submission of exam.submissions) {
+    const hasPendingReview = submission.answers.some((answer) => answer.marksObtained === null);
+    if (hasPendingReview || submission.totalScore === null) {
+      continue;
+    }
+
     const examScore = submission.totalScore ?? 0;
     const existingResult = await prisma.result.findUnique({
       where: {

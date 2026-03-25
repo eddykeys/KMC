@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  CalendarDays,
   CreditCard,
   Receipt,
   Trophy,
@@ -8,7 +9,7 @@ import { DashboardPanel } from "@/components/dashboard/dashboard-panel";
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
 import { auth } from "@/lib/auth";
 import { getAdminAnalyticsData } from "@/lib/admin-analytics";
-import { formatDate, formatNaira } from "@/lib/utils";
+import { formatDate, formatNaira, SCHOOL_DAY_LABELS } from "@/lib/utils";
 import type { SessionUser } from "@/types";
 
 export default async function AdminAnalyticsPage() {
@@ -95,6 +96,107 @@ export default async function AdminAnalyticsPage() {
           )}
         </DashboardPanel>
 
+        <DashboardPanel
+          eyebrow="Attendance pressure"
+          title="Classes needing follow-up"
+          description="These classes show the highest latest away rates across absence, lateness, and excused entries."
+        >
+          {analytics.attendancePressure.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              No attendance pressure signals are available yet.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {analytics.attendancePressure.map((item) => (
+                <article
+                  key={`pressure-${item.classId}`}
+                  className="rounded-3xl border border-white/10 bg-white/[0.04] p-5"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-white">{item.className}</p>
+                      <p className="mt-1 text-sm text-stone-400">{formatDate(item.dateKey)}</p>
+                    </div>
+                    <p className="text-2xl font-semibold text-white">
+                      {item.awayRate.toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.18em] text-stone-500">
+                    <span>Total {item.total}</span>
+                    <span>Away {item.absent + item.late + item.excused}</span>
+                    <span>Present {item.present}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </DashboardPanel>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+        <DashboardPanel
+          eyebrow="Timetable"
+          title="Scheduling coverage"
+          description="This view shows how widely the timetable has been populated and whether the current school day is fully mapped."
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            <DashboardStatCard
+              label="Scheduled Classes"
+              value={analytics.timetableCoverage.scheduledClasses}
+              helper="Classes with at least one timetable slot configured."
+              icon={<CalendarDays className="h-5 w-5" />}
+            />
+            <DashboardStatCard
+              label="Unscheduled Classes"
+              value={analytics.timetableCoverage.unscheduledClasses}
+              helper="Classes still waiting for timetable coverage."
+              icon={<Receipt className="h-5 w-5" />}
+            />
+            <DashboardStatCard
+              label="Total Periods"
+              value={analytics.timetableCoverage.totalPeriods}
+              helper="All timetable slots configured across the school."
+              icon={<BarChart3 className="h-5 w-5" />}
+            />
+            <DashboardStatCard
+              label="Today&apos;s Slots"
+              value={analytics.timetableCoverage.todayScheduleCount}
+              helper="Periods scheduled for the current school day."
+              icon={<Trophy className="h-5 w-5" />}
+            />
+          </div>
+        </DashboardPanel>
+
+        <DashboardPanel
+          eyebrow="Today"
+          title="Current day timetable highlights"
+          description="A quick read on which classes already have periods assigned for the active school day."
+        >
+          {!analytics.currentSchoolDay ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              Today is outside the school timetable window.
+            </div>
+          ) : analytics.timetableHighlights.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">
+              No timetable periods are configured for {SCHOOL_DAY_LABELS[analytics.currentSchoolDay]} yet.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {analytics.timetableHighlights.map((item) => (
+                <article
+                  key={item.id}
+                  className="rounded-3xl border border-white/10 bg-white/[0.04] p-4"
+                >
+                  <p className="font-semibold text-white">{item.className}</p>
+                  <p className="mt-1 text-sm text-stone-400">{item.subjectName}</p>
+                </article>
+              ))}
+            </div>
+          )}
+        </DashboardPanel>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <DashboardPanel
           eyebrow="Academics"
           title="Class performance"
