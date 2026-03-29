@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { logActionSuccess } from "@/lib/action-telemetry";
 import type { SessionUser } from "@/types";
 
 export interface SubmissionGradingFormState {
@@ -102,6 +103,19 @@ export async function gradeSubmissionFormAction(
   revalidatePath(`/teacher/exams/${examId}/submissions/${submissionId}`);
   revalidatePath("/student");
   revalidatePath("/student/results");
+
+  logActionSuccess({
+    action: "teacher.exam.submission.grade",
+    actorRole: user.role,
+    actorId: user.id,
+    schoolId: user.schoolId,
+    targetId: submissionId,
+    details: {
+      examId,
+      totalScore,
+      percentage,
+    },
+  });
 
   return {
     success: true,

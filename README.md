@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KMC School Management System
 
-## Getting Started
+School operations platform for Knightdale Middle College and Priscilla School.
 
-First, run the development server:
+## Current Delivery Phase
+
+As of March 25, 2026, this repository is in **Phase 3 (Hardening and UAT Readiness)**.
+
+### Phase status
+
+- Complete: Admin, Teacher, and Student dashboards with role-based routes.
+- Complete: Core school workflows (users, classes, subjects, schedules, announcements, exams, results, attendance, fees, report cards, analytics).
+- Complete: Phase 2 closure checks (lint + smoke + journey contracts).
+- In progress: Phase 3 hardening (UAT data seed, release checklist, action observability).
+
+## Feature Modules
+
+- Admin
+  - Overview and analytics
+  - Teachers, students, classes, subjects
+  - Timetable scheduling
+  - Announcements
+  - Fee setup and payment recording
+  - Report card generation and publishing
+- Teacher
+  - Overview and timetable view
+  - Lesson plans
+  - Exams (authoring, submissions, analytics)
+  - Results entry
+  - Attendance register
+  - Weekly reports
+- Student
+  - Overview and timetable view
+  - Exam taking and submission status
+  - Results
+  - Learning materials
+  - Fees
+  - Report cards
+
+## Development
+
+Run the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run code quality checks:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run smoke checks:
 
-## Learn More
+```bash
+npm run test:smoke
+```
 
-To learn more about Next.js, take a look at the following resources:
+Run journey contract checks for critical school workflows:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run test:journeys
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run full Phase 2 verification (lint + smoke):
 
-## Deploy on Vercel
+```bash
+npm run verify:phase2
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Seed UAT dataset on a test database:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run seed:uat
+```
+
+## Immediate Next Phase Focus
+
+- Execute full QA walkthrough using the UAT seeded accounts.
+- Expand runtime integration tests around server actions and database transitions.
+- Add centralized monitoring export (OpenTelemetry/Sentry) on top of action telemetry.

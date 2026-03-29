@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { createTeacherSchema } from "@/lib/validators";
 import { createTeacher, deleteTeacher } from "@/actions/user-actions";
+import { logActionFailure, logActionSuccess } from "@/lib/action-telemetry";
 import type { SessionUser } from "@/types";
 
 export interface TeacherFormState {
@@ -52,6 +53,15 @@ export async function createTeacherFormAction(
   const result = await createTeacher(parsed.data);
 
   if (!result.success) {
+    logActionFailure(
+      {
+        action: "admin.teacher.create",
+        actorRole: user.role,
+        actorId: user.id,
+        schoolId: user.schoolId,
+      },
+      result.error || "Failed to create teacher."
+    );
     return {
       success: false,
       message: result.error || "Failed to create teacher.",
@@ -60,6 +70,16 @@ export async function createTeacherFormAction(
 
   revalidatePath("/admin");
   revalidatePath("/admin/teachers");
+
+  logActionSuccess({
+    action: "admin.teacher.create",
+    actorRole: user.role,
+    actorId: user.id,
+    schoolId: user.schoolId,
+    details: {
+      accessId: result.accessId,
+    },
+  });
 
   return {
     success: true,
@@ -82,7 +102,29 @@ export async function deleteTeacherFormAction(formData: FormData) {
     throw new Error("Missing teacher id.");
   }
 
-  await deleteTeacher(teacherId);
+  const result = await deleteTeacher(teacherId);
+  if (!result.success) {
+    logActionFailure(
+      {
+        action: "admin.teacher.delete",
+        actorRole: user.role,
+        actorId: user.id,
+        schoolId: user.schoolId,
+        targetId: teacherId,
+      },
+      result.error || "Failed to delete teacher."
+    );
+    throw new Error(result.error || "Failed to delete teacher.");
+  }
+
   revalidatePath("/admin");
   revalidatePath("/admin/teachers");
+
+  logActionSuccess({
+    action: "admin.teacher.delete",
+    actorRole: user.role,
+    actorId: user.id,
+    schoolId: user.schoolId,
+    targetId: teacherId,
+  });
 }

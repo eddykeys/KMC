@@ -17,7 +17,7 @@ export default async function AdminTeachersPage() {
       <DashboardPanel
         eyebrow="Provisioning"
         title="Create teacher accounts"
-        description="This is the first admin CRUD workflow in Phase 2. Create faculty accounts here and the dashboard will refresh automatically."
+        description="Create faculty accounts here and the dashboard refreshes automatically with the latest records."
       >
         <TeacherCreateForm />
       </DashboardPanel>
@@ -25,7 +25,7 @@ export default async function AdminTeachersPage() {
       <DashboardPanel
         eyebrow="Teachers"
         title="Faculty directory"
-        description="Faculty records created for this school. Delete is live already, while edit and assignment flows can follow next."
+        description="Faculty records created for this school, with edit and cleanup actions available from this directory."
       >
         {teachers.data.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">

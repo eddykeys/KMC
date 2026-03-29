@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { calculateGrade } from "@/lib/utils";
+import { logActionSuccess } from "@/lib/action-telemetry";
 import type { SessionUser } from "@/types";
 
 export async function publishExamResultsFormAction(formData: FormData) {
@@ -116,4 +117,12 @@ export async function publishExamResultsFormAction(formData: FormData) {
   revalidatePath("/student");
   revalidatePath("/student/results");
   revalidatePath("/student/report-cards");
+
+  logActionSuccess({
+    action: "teacher.exam.results.publish",
+    actorRole: user.role,
+    actorId: user.id,
+    schoolId: user.schoolId,
+    targetId: examId,
+  });
 }

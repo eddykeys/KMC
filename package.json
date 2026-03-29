@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:smoke": "node tests/smoke-routes.mjs",
+    "test:journeys": "node tests/journey-contracts.mjs",
+    "test:phase3": "node tests/phase3-readiness.mjs",
+    "verify:phase2": "npm run lint && npm run test:smoke && npm run test:journeys",
+    "verify:phase3": "npm run verify:phase2 && npm run test:phase3",
+    "seed:uat": "node prisma/seed-uat.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

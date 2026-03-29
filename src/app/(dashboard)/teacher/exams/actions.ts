@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { createExamSchema } from "@/lib/validators";
+import { logActionFailure, logActionSuccess } from "@/lib/action-telemetry";
 import type { SessionUser } from "@/types";
 
 export interface TeacherExamFormState {
@@ -73,6 +74,15 @@ export async function createTeacherExamFormAction(
   });
 
   if (!subjectAssignment) {
+    logActionFailure(
+      {
+        action: "teacher.exam.create",
+        actorRole: user.role,
+        actorId: user.id,
+        schoolId: user.schoolId,
+      },
+      "Selected subject and class are not assigned to this teacher."
+    );
     return {
       success: false,
       message: "Selected subject and class are not assigned to this teacher.",
@@ -104,12 +114,32 @@ export async function createTeacherExamFormAction(
     revalidatePath("/teacher");
     revalidatePath("/teacher/exams");
 
+    logActionSuccess({
+      action: "teacher.exam.create",
+      actorRole: user.role,
+      actorId: user.id,
+      schoolId: user.schoolId,
+      details: {
+        subjectId: parsed.data.subjectId,
+        classId: parsed.data.classId,
+        termId: parsed.data.termId,
+      },
+    });
+
     return {
       success: true,
       message: "Exam created successfully.",
     };
   } catch (error) {
-    console.error("Failed to create exam:", error);
+    logActionFailure(
+      {
+        action: "teacher.exam.create",
+        actorRole: user.role,
+        actorId: user.id,
+        schoolId: user.schoolId,
+      },
+      error
+    );
     return {
       success: false,
       message: "Failed to create exam.",

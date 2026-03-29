@@ -54,11 +54,11 @@ export function AdminShell({
 
             <div className="mt-auto rounded-3xl border border-white/10 bg-white/5 p-4">
               <p className="text-xs uppercase tracking-[0.28em] text-stone-400">
-                Phase 2
+                Phase 2 Closure
               </p>
               <p className="mt-2 text-sm text-stone-300">
-                Admin navigation, overview, and route scaffolding are live. The next passes can
-                deepen CRUD flows and reporting.
+                Core admin operations are live across onboarding, scheduling, reporting, and
+                analytics. Focus now is quality hardening and release readiness.
               </p>
             </div>
           </div>
@@ -69,4 +69,3 @@ export function AdminShell({
     </div>
   );
 }
-

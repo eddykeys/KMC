@@ -79,7 +79,7 @@ export default async function AdminClassesPage() {
       <DashboardPanel
         eyebrow="Structure"
         title="Class structure"
-        description="Each class record shows ownership, student count, and subject readiness. Delete is live while richer edit flows can follow next."
+        description="Each class record shows ownership, student count, and subject readiness, with direct edit and cleanup actions."
       >
         {classes.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-6 text-sm text-stone-400">

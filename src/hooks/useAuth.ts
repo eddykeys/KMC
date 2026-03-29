@@ -1,3 +1,14 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+
 export function useAuth() {
-  throw new Error("useAuth is not implemented yet.");
+  const session = useSession();
+
+  return {
+    ...session,
+    user: session.data?.user ?? null,
+    isAuthenticated: session.status === "authenticated",
+    isLoading: session.status === "loading",
+  };
 }

@@ -58,10 +58,11 @@ export function TeacherShell({
 
             <div className="mt-auto rounded-3xl border border-white/10 bg-white/5 p-4">
               <p className="text-xs uppercase tracking-[0.28em] text-stone-400">
-                Next Phase
+                Phase 2 Ready
               </p>
               <p className="mt-2 text-sm text-stone-300">
-                Teacher-facing planning and assessment flows can now grow on top of this overview shell.
+                Teacher planning, assessment, attendance, and weekly reporting flows are active and
+                ready for stabilization.
               </p>
             </div>
           </div>

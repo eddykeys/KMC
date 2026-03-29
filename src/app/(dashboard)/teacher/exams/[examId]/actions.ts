@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { createQuestionSchema } from "@/lib/validators";
+import { logActionFailure, logActionSuccess } from "@/lib/action-telemetry";
 import type { SessionUser } from "@/types";
 
 export interface ExamQuestionFormState {
@@ -58,6 +59,16 @@ export async function createExamQuestionFormAction(
   });
 
   if (!exam) {
+    logActionFailure(
+      {
+        action: "teacher.exam.question.create",
+        actorRole: user.role,
+        actorId: user.id,
+        schoolId: user.schoolId,
+        targetId: examId,
+      },
+      "Exam not found for this teacher."
+    );
     return {
       success: false,
       message: "Exam not found for this teacher.",
@@ -79,6 +90,14 @@ export async function createExamQuestionFormAction(
 
   revalidatePath(`/teacher/exams/${examId}`);
   revalidatePath("/teacher/exams");
+
+  logActionSuccess({
+    action: "teacher.exam.question.create",
+    actorRole: user.role,
+    actorId: user.id,
+    schoolId: user.schoolId,
+    targetId: examId,
+  });
 
   return {
     success: true,
@@ -123,4 +142,15 @@ export async function toggleExamPublishFormAction(formData: FormData) {
   revalidatePath(`/teacher/exams/${examId}`);
   revalidatePath("/teacher/exams");
   revalidatePath("/student");
+
+  logActionSuccess({
+    action: "teacher.exam.publish.toggle",
+    actorRole: user.role,
+    actorId: user.id,
+    schoolId: user.schoolId,
+    targetId: examId,
+    details: {
+      isPublished: !exam.isPublished,
+    },
+  });
 }
