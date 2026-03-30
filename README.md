@@ -75,6 +75,25 @@ Seed UAT dataset on a test database:
 npm run seed:uat
 ```
 
+Configure centralized monitoring export (optional):
+
+```bash
+# OpenTelemetry logs endpoint (preferred)
+OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=https://otel-collector.example.com/v1/logs
+
+# Or set base OTLP endpoint and Next.js app will append /v1/logs
+OTEL_EXPORTER_OTLP_ENDPOINT=https://otel-collector.example.com
+
+# Optional OTLP headers in key=value comma format
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer your-token
+
+# Optional service name override
+OTEL_SERVICE_NAME=kmc-app
+
+# Optional fallback webhook for raw telemetry payloads
+MONITORING_WEBHOOK_URL=https://monitoring.example.com/ingest
+```
+
 ## Immediate Next Phase Focus
 
 - Execute full QA walkthrough using the UAT seeded accounts.

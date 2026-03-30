@@ -1,6 +1,8 @@
-type TelemetryLevel = "info" | "error";
+import { exportMonitoringEvent } from "@/lib/monitoring-export";
 
-interface ActionTelemetryMeta {
+export type TelemetryLevel = "info" | "error";
+
+export interface ActionTelemetryMeta {
   action: string;
   actorRole?: string;
   actorId?: string;
@@ -9,8 +11,15 @@ interface ActionTelemetryMeta {
   details?: Record<string, unknown>;
 }
 
+export interface ActionTelemetryEvent extends ActionTelemetryMeta {
+  timestamp: string;
+  level: TelemetryLevel;
+  message: string;
+  error?: unknown;
+}
+
 function emit(level: TelemetryLevel, message: string, meta: ActionTelemetryMeta, error?: unknown) {
-  const payload = {
+  const payload: ActionTelemetryEvent = {
     timestamp: new Date().toISOString(),
     level,
     message,
@@ -32,10 +41,12 @@ function emit(level: TelemetryLevel, message: string, meta: ActionTelemetryMeta,
 
   if (level === "error") {
     console.error(serialized);
+    void exportMonitoringEvent(payload);
     return;
   }
 
   console.info(serialized);
+  void exportMonitoringEvent(payload);
 }
 
 export function logActionSuccess(meta: ActionTelemetryMeta) {
